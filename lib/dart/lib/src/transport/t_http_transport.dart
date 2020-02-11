@@ -44,7 +44,7 @@ class THttpClientTransport extends TBufferedTransport {
   }
 
   Future flush() {
-    var requestBody = base64.encode(consumeWriteBuffer());
+    var requestBody = consumeWriteBuffer();
 
     // Use a sync completer to ensure that the buffer can be read immediately
     // after the read buffer is set, and avoid a race condition where another
@@ -54,15 +54,7 @@ class THttpClientTransport extends TBufferedTransport {
     httpClient
         .post(config.url, headers: config.headers, body: requestBody)
         .then((response) {
-      Uint8List data;
-      try {
-        data = new Uint8List.fromList(base64.decode(response.body));
-      } on FormatException catch (_) {
-        throw new TProtocolError(TProtocolErrorType.INVALID_DATA,
-            "Expected a Base 64 encoded string.");
-      }
-
-      _setReadBuffer(data);
+      _setReadBuffer(response.bodyBytes);
       completer.complete();
     });
 
