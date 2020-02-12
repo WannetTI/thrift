@@ -113,8 +113,10 @@
   <target name="mvn.init" depends="mvn.ant.tasks.download" unless="mvn.finished">
     <typedef uri="antlib:org.apache.maven.artifact.ant" classpath="${build.tools.dir}/${mvn.ant.task.jar}"/>
 
+    <artifact:remoteRepository id="remote.repository" url="${mvn.repo}" />
     <artifact:dependencies filesetId="test.dependency.jars">
       <dependency groupId="com.github.fge" artifactId="json-schema-validator" version="${json-schema-validator.version}"/>
+      <remoteRepository refid="remote.repository" />
     </artifact:dependencies>
 
     <!-- Copy the dependencies to the build/lib dir -->
